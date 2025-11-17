@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Trees: The Ultimate Interview & Study Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ================================================== -->
+    <!--                      CSS STYLES                   -->
+    <!-- ================================================== -->
+    <style>
+        /* --- General Setup & Theming --- */
+        :root {
+            --bg-color: #1e1e1e;
+            --surface-color: #2a2a2a;
+            --primary-text: #e0e0e0;
+            --secondary-text: #a0a0a0;
+            --accent-color: #4fb3bf;
+            --accent-hover: #6fc9d4;
+            --border-color: #404040;
+            --code-bg: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 850px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* --- Typography --- */
+        h1, h2, h3 {
+            color: var(--primary-text);
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            text-align: center;
+            color: var(--secondary-text);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        strong, b {
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        /* --- Navigation --- */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .sticky-nav a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--secondary-text);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .sticky-nav a:hover {
+            color: var(--primary-text);
+            background-color: var(--bg-color);
+            text-decoration: none;
+        }
+
+        /* --- Q&A Blocks --- */
+        .qa-block {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden; /* Contains the rounded corners on children */
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .qa-block:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .question-button {
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            color: var(--primary-text);
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .question-button:hover {
+            background-color: rgba(79, 179, 191, 0.1);
+        }
+
+        .question-button::after {
+            content: '+';
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-left: auto;
+            color: var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .question-button[aria-expanded="true"]::after {
+            transform: rotate(45deg);
+        }
+
+        .question-number {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+
+        .answer-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding: 0 1.5rem;
+        }
+
+        .answer-content[aria-hidden="false"] {
+            max-height: 2000px; /* A value large enough to fit content */
+            transition: max-height 0.5s ease-in, padding 0.4s ease-in;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .simple, .technical {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .simple {
+            background-color: var(--bg-color);
+            border-left: 4px solid #7c4dff; /* A nice purple */
+        }
+
+        .technical {
+            background-color: var(--code-bg);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .simple strong, .technical strong {
+            color: var(--primary-text); /* Ensure strong tags are visible */
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-text);
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                font-size: 15px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .container {
+                margin: 1rem auto;
+            }
+            .sticky-nav {
+                gap: 1rem;
+                padding: 0.5rem 0;
+            }
+            .sticky-nav a {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Decision Trees: The Ultimate Interview & Study Guide</h1>
+        <p>Your comprehensive resource for mastering Decision Tree concepts, from fundamentals to advanced topics.</p>
+    </header>
+
+    <nav class="sticky-nav">
+        <a href="#cat1">Fundamentals</a>
+        <a href="#cat2">Core Mechanics</a>
+        <a href="#cat3">Pruning</a>
+        <a href="#cat4">Pros & Cons</a>
+        <a href="#cat5">Advanced Topics</a>
+        <a href="#cat6">Practical Scenarios</a>
+        <a href="#cat7">Deeper Dive</a>
+    </nav>
+
+    <main class="container">
+        
+        <!-- Category 1 -->
+        <section id="cat1">
+            <h2>Category 1: Fundamental Concepts (The "What")</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">1.</span> What is a Decision Tree?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> Imagine a flowchart that helps you make a decision. At each step, you ask a question (e.g., "Is the weather sunny?"), and based on the answer, you move to the next step until you reach a final conclusion (e.g., "Play tennis" or "Don't play tennis"). A Decision Tree is exactly this, but the computer learns the best questions to ask from your data to predict an outcome.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> A Decision Tree is a <b>supervised learning</b> algorithm that can be used for both <b>classification</b> and <b>regression</b> tasks. It is a <b>non-parametric</b> model, meaning it doesn't make assumptions about the underlying data distribution. The model builds a tree structure where each internal node represents a "test" on a feature, each branch represents the outcome of the test, and each leaf node represents a class label or a continuous value.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">2.</span> What are the main components of a Decision Tree?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> <b>Root Node:</b> The very first question or the top of the tree. <b>Internal Node:</b> Any question in the middle of the tree that splits the data further. <b>Leaf Node:</b> The final answer or prediction at the end of a branch. <b>Branch:</b> A link between nodes, representing the outcome of a question.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Root Node:</b> The topmost node, representing the entire dataset. <b>Internal Node:</b> A node that represents a feature test and splits into further nodes. <b>Leaf Node (or Terminal Node):</b> A node that does not split further, holding the final output. <b>Splitting:</b> The process of dividing a node into two or more sub-nodes.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">3.</span> Is a Decision Tree supervised or unsupervised?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> It's <b>supervised</b>. It needs to be trained on data where we already know the correct answers (the "target" or "label"). It learns the patterns from these known answers to make predictions on new, unseen data.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> Decision Trees are <b>supervised learning</b> models because they learn a mapping function `y = f(x)` from a labeled training dataset, where `x` is the set of features and `y` is the target variable.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">4.</span> What types of problems can Decision Trees solve?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> They can solve two main types of problems: 1. <b>Classification:</b> Predicting a category (e.g., "Yes" or "No"). 2. <b>Regression:</b> Predicting a continuous number (e.g., the price of a house).</p>
+                    <p class="technical"><strong>Technical Terms:</strong> Decision Trees can be used for <b>Classification Trees</b> (categorical target) and <b>Regression Trees</b> (continuous target). The two are often referred to together as <b>CART (Classification and Regression Trees)</b>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 2 -->
+        <section id="cat2">
+            <h2>Category 2: Core Mechanics & Algorithms (The "How")</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">5.</span> How does a Decision Tree decide where to split a node?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> The tree's goal is to ask questions that make the groups of data as "pure" as possible. A pure group is one where most of the items are of the same type. It tries every possible split on every feature and picks the one that results in the purest child nodes.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> The algorithm selects the best split by using an <b>impurity metric</b>. It evaluates all possible splits for all features and chooses the split that results in the maximum <b>Information Gain</b> (or the greatest reduction in impurity).</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">6.</span> What is Gini Impurity?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> Gini Impurity is a way to measure how "mixed up" a group of items is. A Gini score of 0 means the group is perfectly pure. A score of 0.5 (for a two-class problem) means the group is maximally impure (50/50 mix). The tree aims to lower the Gini score with every split.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Gini Impurity</b> is a metric that measures the probability of incorrectly classifying a randomly chosen element in the dataset if it were randomly labeled according to the distribution of labels in the subset. The formula is `1 - Σ(p_i)^2` for all classes `i`.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">7.</span> What is Entropy and Information Gain?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> <b>Entropy:</b> Like Gini, this is another measure of impurity or "disorder." High entropy means a group is very mixed up. <b>Information Gain:</b> This is the "reward" for a split. It measures how much the entropy (disorder) decreased after making a split. The tree always picks the split with the highest Information Gain.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Entropy</b> is a concept from information theory that measures the level of uncertainty in a dataset. The formula is `-Σ(p_i) * log2(p_i)`. <b>Information Gain</b> is the decrease in entropy after a dataset is split on an attribute. It's calculated as `Information Gain = Entropy(Parent) - [Weighted Average] * Entropy(Children)`.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">8.</span> What's the difference between Gini Impurity and Entropy?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> They are both ways to measure impurity and usually lead to very similar trees. The main difference is speed. Gini is slightly faster to calculate because it doesn't use logarithms. In practice, it often doesn't matter which one you use.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> While both are impurity metrics, Gini Impurity is computationally more efficient as it involves only squaring probabilities, whereas Entropy requires logarithmic calculations. Both metrics are convex functions and lead to similar splits, but Gini tends to isolate the most frequent class in its own branch, while Entropy tends to produce more balanced trees.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 3 -->
+        <section id="cat3">
+            <h2>Category 3: Tree Building & Pruning (The "Refinement")</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">9.</span> What is Overfitting in a Decision Tree?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> Overfitting is when the tree learns the training data *too* well. It memorizes every single detail, including the noise and outliers. As a result, it performs great on the data it has seen but fails to make good predictions on new, unseen data.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> Overfitting occurs when a model captures the noise in the training data along with the underlying pattern. This leads to <b>low bias</b> and <b>high variance</b>. The model has an overly complex structure that fits the training data perfectly but generalizes poorly to new data.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">10.</span> How do you prevent overfitting in a Decision Tree?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> You can prevent it by not letting the tree grow too wild and complex. There are two main ways: 1. <b>Pre-Pruning (Early Stopping):</b> Stop the tree from growing while it's being built by setting rules like "don't let the tree get deeper than 5 levels." 2. <b>Post-Pruning:</b> Let the tree grow fully, then chop off the branches that are not very helpful.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Pre-Pruning</b> involves setting <b>hyperparameters</b> to halt the tree's growth (e.g., `max_depth`, `min_samples_split`). <b>Post-Pruning</b> involves first growing a full tree and then removing branches that provide little predictive power, often using a validation set or a penalty for tree complexity (<b>CCP - Cost Complexity Pruning</b>).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 4 -->
+        <section id="cat4">
+            <h2>Category 4: Advantages & Disadvantages (The "Why/Why Not")</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">11.</span> What are the main advantages of Decision Trees?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> <b>Easy to Understand:</b> You can look at the tree and see exactly how it makes decisions. <b>Requires Little Data Prep:</b> It doesn't need data to be scaled. <b>Handles All Data Types:</b> It can work with both numerical and categorical data. <b>Implicitly Performs Feature Selection:</b> The most important features end up at the top of the tree.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>High Interpretability:</b> The model is a "white-box." <b>No Need for Feature Scaling:</b> The tree's splitting logic is based on order and thresholds. <b>Handles Non-linear Relationships.</b> <b>Robust to Outliers.</b></p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">12.</span> What are the main disadvantages of Decision Trees?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> <b>Prone to Overfitting:</b> This is their biggest weakness. <b>Unstable:</b> A small change in your data can lead to a completely different tree. <b>Can be Biased:</b> If you have a feature with many categories, the tree might be biased towards splitting on it.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>High Variance:</b> Small variations in the data can result in a completely different tree structure. <b>Greedy Algorithm:</b> The algorithm makes the locally optimal decision at each node without guaranteeing a globally optimal tree. <b>Bias towards Features with More Levels.</b></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 5 -->
+        <section id="cat5">
+            <h2>Category 5: Advanced Topics & Comparisons</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">13.</span> How does a Decision Tree compare to Logistic Regression?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> A Decision Tree asks a series of "if-then" questions, creating non-linear, boxy-shaped decision boundaries. Logistic Regression tries to find a single straight line to separate the classes. Trees are more intuitive but can overfit; Logistic Regression is more stable but assumes the data is linearly separable.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> A Decision Tree is a <b>non-linear model</b> that partitions the feature space into axis-aligned rectangles. Logistic Regression is a <b>linear model</b>. Trees are <b>non-parametric</b>, while Logistic Regression is <b>parametric</b>.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">14.</span> What is an Ensemble Method? How does it relate to Decision Trees?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> An Ensemble Method is like asking a team of experts instead of just one. By combining the predictions of many "weak" models (like simple Decision Trees), you can create one very strong and accurate model. Decision Trees are the most common "weak learner" used in powerful ensembles.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Ensemble learning</b> combines multiple base learners (e.g., Decision Trees) to solve a problem, often resulting in better predictive performance. Decision Trees are the fundamental building blocks for popular ensemble methods like <b>Random Forests</b> and <b>Gradient Boosting Machines (GBM)</b>.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">15.</span> What is a Random Forest?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> A Random Forest is a collection of many different Decision Trees. To make a prediction, it asks every tree in the forest for its opinion and then takes a majority vote (for classification) or an average (for regression). It's powerful because it corrects the single tree's biggest problem: overfitting.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> A Random Forest is an ensemble method that uses <b>bagging (Bootstrap Aggregating)</b> and <b>feature randomness</b>. It builds multiple Decision Trees on various sub-samples of the dataset and uses a random subset of features for each split. The final prediction is an average/vote, which significantly reduces variance.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">16.</span> What is Gradient Boosting?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> Gradient Boosting is another way to build a team of trees, but it's more strategic. It builds trees one by one. Each new tree's job is to correct the mistakes made by the previous team of trees. It's a sequential process that focuses on the "hard-to-predict" examples, making the final model extremely accurate.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Gradient Boosting</b> is an ensemble technique that builds models sequentially. Each new model is trained to predict the <b>residual errors</b> (the negative gradient) of the previous ensemble. By adding these new models, the algorithm iteratively reduces the loss function. Popular implementations include <b>XGBoost</b>, <b>LightGBM</b>, and <b>CatBoost</b>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 6 -->
+        <section id="cat6">
+            <h2>Category 6: Practical & Scenario-Based Questions</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">17.</span> Your model has 99% accuracy on training but 65% on test. What is happening and what would you do?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> This is a classic case of <b>overfitting</b>. The model has memorized the training data. To fix it, I would make the tree simpler using <b>pre-pruning</b> (e.g., setting `max_depth`) or <b>post-pruning</b>. A better solution might be to switch to a <b>Random Forest</b> or <b>Gradient Boosting</b> model.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> The model exhibits <b>high variance</b> and is overfitting. I would implement regularization techniques like tuning `max_depth` or `min_samples_leaf` using cross-validation, or use <b>Cost Complexity Pruning (CCP)</b>. For a more robust solution, I would transition to an ensemble model like a <b>Random Forest</b> to reduce variance or a <b>Gradient Boosting Machine</b> to improve predictive power.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">18.</span> How would you explain the output of a Decision Tree model to a non-technical manager?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> "I've created a model that works like a checklist to help us decide, for example, which customers are most likely to buy our new product. Look at this chart. The first question it asks is 'Has the customer bought from us in the last 6 months?'. If yes, we go down this path. This chart shows us the most important factors we should be looking at, right at the top of the tree."</p>
+                    <p class="technical"><strong>Technical Terms:</strong> Focus on the model's <b>interpretability</b>. Use the tree's visual structure to explain the decision logic as a series of simple, nested "if-then" rules. Highlight the top nodes as the most <b>important features</b> according to the model, translating the technical concept of feature importance into a business-relevant insight.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 7 -->
+        <section id="cat7">
+            <h2>Category 7: Deeper Dive & Follow-Up Questions</h2>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">19.</span> How does a Decision Tree handle continuous features for splitting?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> The tree sorts all the unique values of a continuous feature (like 'age') and then tests every possible midpoint as a potential split point. It picks the one that gives the best information gain.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> For a continuous feature, the algorithm sorts the feature's values. It then considers split points that are the midpoints between each pair of adjacent unique values. For each potential split, it calculates the impurity metric and selects the split point that yields the highest Information Gain.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">20.</span> Why can't we just use "accuracy" as a criterion for splitting a node?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> Accuracy only tells you how many predictions are right overall, not how "good" a split is. A split might create one tiny, pure node and one huge, mixed node. This isn't helpful. Impurity measures like Gini and Entropy are better because they focus on making the *child nodes themselves* more pure.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> Using accuracy as a splitting criterion is ineffective because it doesn't account for the distribution of classes within the resulting child nodes. Impurity metrics like Gini and Entropy measure the homogeneity of a node, which is a direct proxy for how "informative" a split is, leading to better tree construction.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">21.</span> When would you prefer Gini Impurity over Entropy, and vice-versa?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> In practice, they often produce very similar trees. The main difference is computational cost. Gini is faster to calculate because it doesn't involve logarithms. So, for very large datasets, Gini is often preferred for its speed.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> The choice is often a matter of computational preference. Gini Impurity is computationally less intensive. While both are monotonic functions of each other and lead to similar splits, Entropy can be slightly more sensitive to changes in class probabilities. In most modern libraries, the performance difference is minimal, but Gini remains the default in many implementations due to its speed.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">22.</span> Explain the impact of `max_depth` vs. `min_samples_leaf` on the tree's structure.
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> <b>`max_depth`</b> is like a height limit. It stops the tree from growing too tall, preventing overly specific rules. <b>`min_samples_leaf`</b> is like a "minimum crowd size" rule. It says a branch can only end if it has at least, say, 10 data points. This prevents the tree from creating tiny, specific branches that are likely just memorizing noise.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>`max_depth`</b> is a global constraint that limits the maximum number of levels, directly controlling its complexity and reducing variance. <b>`min_samples_leaf`</b> is a local constraint that ensures each leaf node has a minimum number of training samples, which smooths the model and prevents splits that would create nodes with very few samples.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">23.</span> What is the trade-off between pre-pruning and post-pruning?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> <b>Pre-pruning</b> is faster but "greedy." It stops the tree early based on a guess, so it might accidentally stop a branch that could have become very useful. <b>Post-pruning</b> is more thorough because it sees the full picture first, but it's much more computationally expensive.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> <b>Pre-pruning</b> is computationally efficient but risks "underfitting" because it uses a heuristic to stop growth. <b>Post-pruning</b> is more computationally expensive as it requires growing a full, unpruned tree first. However, it is often more effective as it can identify and remove branches that offer little predictive power.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">24.</span> In what scenario would you choose Logistic Regression over a Decision Tree?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> I would choose Logistic Regression if I believe the relationship between my features and the outcome is mostly linear, or if I need to clearly explain *how much* each feature contributes to the prediction. Logistic Regression gives you clear coefficients, which are easy to interpret.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> Logistic Regression would be preferred when the relationship between features and the log-odds of the outcome is expected to be linear, or when <b>model interpretability</b> and <b>explainability</b> are paramount. Its coefficients provide direct insight into feature importance and directionality. It is also a better choice when <b>low variance</b> and <b>computational efficiency</b> are critical.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">25.</span> How does the instability of a single Decision Tree motivate the use of ensemble methods?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> A single Decision Tree is unstable because a small change in the data can create a completely different tree. Ensemble methods like Random Forests solve this by building hundreds of different trees on different parts of the data and then averaging their opinions. This "wisdom of the crowd" approach cancels out the individual instability.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> The <b>high variance</b> of a single Decision Tree is a major weakness. Ensemble methods mitigate this. <b>Bagging</b> (like in Random Forests) reduces variance by training learners on different bootstrap samples. <b>Boosting</b> reduces both bias and variance by sequentially training learners to correct the errors of the previous ones.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">26.</span> What is the fundamental difference in how Random Forest and Gradient Boosting build their ensemble of trees?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> The key difference is <b>independence vs. dependence</b>. <b>Random Forest</b> builds all its trees independently and at the same time. <b>Gradient Boosting</b> builds its trees one after another. Each new tree's only job is to correct the mistakes made by the team of trees built before it.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> The core difference lies in their construction methodology. <b>Random Forest</b> uses a <b>bagging</b> approach, where trees are built in parallel on independent samples. <b>Gradient Boosting</b> is a <b>sequential, additive</b> model where each new tree is trained to predict the <b>residual errors</b> of the current ensemble.</p>
+                </div>
+            </div>
+            <div class="qa-block">
+                <button class="question-button" aria-expanded="false">
+                    <span class="question-number">27.</span> If your Random Forest model is still overfitting, what hyperparameters would you tune?
+                </button>
+                <div class="answer-content">
+                    <p class="simple"><strong>Simple Explanation:</strong> If a Random Forest is overfitting, it means the individual trees are too complex and too similar. I would tune the hyperparameters to make the trees simpler and more diverse. I would: decrease `max_depth`, increase `min_samples_leaf`, and most importantly, decrease `max_features` to force the trees to be more different from one another.</p>
+                    <p class="technical"><strong>Technical Terms:</strong> To combat overfitting in a Random Forest, I would focus on hyperparameters that increase regularization and model diversity: decrease `max_depth` or increase `min_samples_leaf` to regularize the individual trees, and decrease `max_features` to increase the randomness and decorrelation between the trees, which is crucial for reducing variance in a bagging ensemble.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Created for your success in papers and interviews. Good luck!</p>
+    </footer>
+
+    <!-- ================================================== -->
+    <!--                    JAVASCRIPT                     -->
+    <!-- ================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const questionButtons = document.querySelectorAll('.question-button');
+
+            questionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Find the corresponding answer content
+                    const answerContent = button.nextElementSibling;
+                    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+                    // Toggle the ARIA attributes
+                    button.setAttribute('aria-expanded', !isExpanded);
+                    answerContent.setAttribute('aria-hidden', isExpanded);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
